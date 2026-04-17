@@ -136,9 +136,14 @@ export default function App() {
           className={`w-full max-w-md ${isDarkMode ? 'bg-[#0d121c] border-[#1a2333]' : 'bg-white border-[#e1e8ed]'} border rounded-xl p-8 shadow-sm`}
         >
           <div className="flex items-center justify-between mb-8">
-            <div className={`flex items-center gap-2 ${isDarkMode ? 'text-[#4ade80]' : 'text-[#107c10]'} font-bold text-xl`}>
-              <LayoutDashboard size={24} />
-              Teacher
+            <div className={`flex items-center gap-3 ${isDarkMode ? 'text-[#4ade80]' : 'text-[#107c10]'} font-bold text-lg md:text-xl`}>
+              <img 
+                src="https://media.licdn.com/dms/image/v2/D4E03AQGmsDKBaZo11w/profile-displayphoto-scale_200_200/B4EZenFWidGwAY-/0/1750854889953?e=2147483647&v=beta&t=7-JOvdyIKHjXOUCvcy5JUZYlWdGqcRtvceYthLn0TU8" 
+                alt="Logo" 
+                className="w-10 h-10 rounded-full border border-current shadow-sm object-cover"
+                referrerPolicy="no-referrer"
+              />
+              <span className="leading-tight">Teachers Lunch Problem</span>
             </div>
             <button 
               className={`p-2 ${isDarkMode ? 'bg-[#1a2333]' : 'bg-[#f4f7f6]'} rounded-full text-[#7f8c8d] hover:bg-[#e1e8ed] transition-colors`}
@@ -197,9 +202,14 @@ export default function App() {
       {/* Sidebar */}
       <aside className={`w-[240px] ${isDarkMode ? 'bg-[#0d121c] border-[#1a2333]' : 'bg-white border-[#e1e8ed]'} border-r p-6 flex flex-col fixed h-full z-30 transition-transform duration-300 md:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="text-xl font-bold text-[#107c10] mb-10 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <LayoutDashboard size={24} />
-            Teacher
+          <div className="flex items-center gap-3">
+            <img 
+              src="https://media.licdn.com/dms/image/v2/D4E03AQGmsDKBaZo11w/profile-displayphoto-scale_200_200/B4EZenFWidGwAY-/0/1750854889953?e=2147483647&v=beta&t=7-JOvdyIKHjXOUCvcy5JUZYlWdGqcRtvceYthLn0TU8" 
+              alt="Logo" 
+              className="w-8 h-8 rounded-full border border-current object-cover shadow-sm"
+              referrerPolicy="no-referrer"
+            />
+            <span className="text-[14px] leading-tight">Teachers Lunch Problem</span>
           </div>
           <button 
             className={`p-2 ${isDarkMode ? 'bg-[#1a2333]' : 'bg-[#f4f7f6]'} rounded-full text-[#7f8c8d] hover:bg-[#e1e8ed] transition-colors`}
@@ -282,8 +292,13 @@ export default function App() {
         {/* Header for Desktop and Mobile */}
         <header className={`md:hidden sticky top-0 z-20 flex justify-between items-center p-4 ${isMobileMenuOpen ? 'hidden' : 'flex'} ${isDarkMode ? 'bg-[#0d121c] border-b border-[#1a2333]' : 'bg-white border-b border-[#e1e8ed]'}`}>
           <div className="flex items-center gap-2 font-bold text-[#107c10]">
-            <LayoutDashboard size={20} />
-            Teacher
+            <img 
+              src="https://media.licdn.com/dms/image/v2/D4E03AQGmsDKBaZo11w/profile-displayphoto-scale_200_200/B4EZenFWidGwAY-/0/1750854889953?e=2147483647&v=beta&t=7-JOvdyIKHjXOUCvcy5JUZYlWdGqcRtvceYthLn0TU8" 
+              alt="Logo" 
+              className="w-6 h-6 rounded-full border border-current object-cover shadow-sm"
+              referrerPolicy="no-referrer"
+            />
+            <span className="text-[14px] leading-tight">Teachers Lunch Problem</span>
           </div>
           <div className="flex items-center gap-3">
             <button 

@@ -14,7 +14,10 @@ interface MillListTableProps {
   isDarkMode?: boolean;
 }
 
+type TabType = 'all' | 'own';
+
 export default function MillListTable({ millList, searchTerm, setSearchTerm, user, onRefresh, isDarkMode }: MillListTableProps) {
+  const [activeTableTab, setActiveTableTab] = useState<TabType>('all');
   const [filterInstitute, setFilterInstitute] = useState('');
   const [filterDepartment, setFilterDepartment] = useState('');
   const [filterComment, setFilterComment] = useState('');
@@ -36,6 +39,17 @@ export default function MillListTable({ millList, searchTerm, setSearchTerm, use
 
   const filteredMillList = useMemo(() => {
     return millList.filter(entry => {
+      // First apply Tab filter
+      if (activeTableTab === 'own' && user) {
+        // Compare with creatorUserId (normalized)
+        const creatorId = (entry.creatorUserId || '').toString().trim().toLowerCase();
+        const currentUserId = (user.userId || '').toString().trim().toLowerCase();
+        
+        if (creatorId !== currentUserId) {
+          return false;
+        }
+      }
+
       const matchesSearch = 
         (entry.date || '').toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
         (entry.tPin || '').toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -50,7 +64,7 @@ export default function MillListTable({ millList, searchTerm, setSearchTerm, use
       
       return matchesSearch && matchesInstitute && matchesDepartment && matchesComment;
     });
-  }, [millList, searchTerm, filterInstitute, filterDepartment, filterComment]);
+  }, [millList, searchTerm, filterInstitute, filterDepartment, filterComment, activeTableTab, user]);
 
   const formatDateString = (dateStr?: string) => {
     if (!dateStr) return '';
@@ -120,6 +134,42 @@ export default function MillListTable({ millList, searchTerm, setSearchTerm, use
         animate={{ opacity: 1 }}
         className="flex flex-col flex-grow h-0 gap-4"
       >
+        {/* Tabs for Records */}
+        <div className="flex items-center gap-1 border-b border-gray-200 dark:border-[#1a2333] mb-2 px-1">
+          <button
+            onClick={() => setActiveTableTab('all')}
+            className={`px-4 py-2 text-sm font-semibold transition-all relative ${
+              activeTableTab === 'all'
+                ? (isDarkMode ? 'text-[#4ade80]' : 'text-[#107c10]')
+                : (isDarkMode ? 'text-[#94a3b8] hover:text-[#e2e8f0]' : 'text-[#7f8c8d] hover:text-[#2c3e50]')
+            }`}
+          >
+            All Records
+            {activeTableTab === 'all' && (
+              <motion.div 
+                layoutId="activeTableTab" 
+                className={`absolute bottom-0 left-0 right-0 h-0.5 ${isDarkMode ? 'bg-[#4ade80]' : 'bg-[#107c10]'}`} 
+              />
+            )}
+          </button>
+          <button
+            onClick={() => setActiveTableTab('own')}
+            className={`px-4 py-2 text-sm font-semibold transition-all relative ${
+              activeTableTab === 'own'
+                ? (isDarkMode ? 'text-[#4ade80]' : 'text-[#107c10]')
+                : (isDarkMode ? 'text-[#94a3b8] hover:text-[#e2e8f0]' : 'text-[#7f8c8d] hover:text-[#2c3e50]')
+            }`}
+          >
+            Own Records
+            {activeTableTab === 'own' && (
+              <motion.div 
+                layoutId="activeTableTab" 
+                className={`absolute bottom-0 left-0 right-0 h-0.5 ${isDarkMode ? 'bg-[#4ade80]' : 'bg-[#107c10]'}`} 
+              />
+            )}
+          </button>
+        </div>
+
         <div className={`md:hidden p-4 rounded-xl border ${isDarkMode ? 'bg-[#0d121c] border-[#1a2333]' : 'bg-white border-[#e1e8ed]'} flex-shrink-0`}>
           <input 
             type="text" 
