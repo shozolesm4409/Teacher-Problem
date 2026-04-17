@@ -1,0 +1,6 @@
+{
+  "name": "Teacher",
+  "description": "A data entry dashboard linked to Google Sheets for managing Mill List, Comments, and Users.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}

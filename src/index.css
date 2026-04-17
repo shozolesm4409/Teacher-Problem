@@ -1,0 +1,122 @@
+@import "tailwindcss";
+
+@layer base {
+  .dark {
+    --bg-primary: #0a0e17;
+    --bg-secondary: #0d121c;
+    --text-primary: #f8fafc; /* Brighter white for better contrast */
+    --text-secondary: #94a3b8; /* Slate light gray */
+    --border-color: #1a2333;
+    
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+  }
+}
+
+.dark {
+  background-color: #0a0e17;
+  color: #f8fafc;
+}
+
+.dark * {
+  border-color: #1a2333;
+}
+
+/* Global dark mode overrides for common components and hardcoded colors */
+.dark .bg-white {
+  background-color: #0d121c;
+}
+
+.dark .bg-[#f4f7f6] {
+  background-color: #0a0e17;
+}
+
+/* Primary text color (Day: #2c3e50, Night: #f8fafc) */
+.text-[#2c3e50] {
+  color: #2c3e50;
+}
+.dark .text-[#2c3e50], 
+.dark .text-slate-900,
+.dark h1, .dark h2, .dark h3, .dark h4 {
+  color: #f8fafc !important;
+}
+
+/* Secondary/Label text color (Day: #7f8c8d, Night: #94a3b8) */
+.text-[#7f8c8d] {
+  color: #7f8c8d;
+}
+.dark .text-[#7f8c8d],
+.dark .text-[#a0aec0],
+.dark label, .dark .text-slate-500 {
+  color: #94a3b8 !important;
+}
+
+/* Green theme color (Day: #107c10, Night: #4ade80) */
+.text-[#107c10] {
+  color: #107c10;
+}
+.dark .text-[#107c10] {
+  color: #4ade80 !important;
+}
+
+/* Backgrounds for panels and containers */
+.dark .bg-[#fafbfc] {
+  background-color: #0a0e17;
+}
+
+.dark .bg-[#ebf5eb] {
+  background-color: #064e3b;
+  color: #4ade80;
+}
+
+/* Table specific fixes */
+.dark table {
+  color: #f1f5f9;
+}
+
+.dark th {
+  color: #94a3b8;
+  border-color: #1a2333;
+}
+
+.dark td {
+  border-color: #1a2333;
+}
+
+/* Form elements in dark mode */
+.dark input, 
+.dark select, 
+.dark textarea {
+  background-color: #111827 !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+
+.dark input::placeholder {
+  color: #4b5563 !important;
+}
+
+.dark select option {
+  background-color: #111827;
+  color: #f8fafc;
+}
+
+/* Scrollbar for dark mode */
+.dark ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #0a0e17;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
