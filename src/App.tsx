@@ -16,7 +16,8 @@ import {
   Menu,
   PieChart,
   MessageSquare,
-  X
+  X,
+  Database
 } from 'lucide-react';
 import { Sun, Moon } from 'lucide-react';
 import { api } from './lib/api';
@@ -51,6 +52,16 @@ export default function App() {
   const [millList, setMillList] = useState<MillEntry[]>([]);
   const [comments, setComments] = useState<CommentOption[]>([]);
   const [usersList, setUsersList] = useState<User[]>([]);
+  const [examinersCache, setExaminersCache] = useState<any[]>(() => {
+    const saved = localStorage.getItem('sheetSync_examinersCache');
+    try {
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+  const [isCacheLoading, setIsCacheLoading] = useState(false);
+  const [syncTimer, setSyncTimer] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
 
   // Initial data load if user is already logged in
@@ -58,8 +69,29 @@ export default function App() {
     if (user) {
       loadConfig();
       loadMillList();
+      
+      // Fast Background Load: only sync if cache is old or empty
+      const lastSync = localStorage.getItem('sheetSync_lastCacheSync');
+      const fiveMins = 5 * 60 * 1000;
+      if (!lastSync || (Date.now() - Number(lastSync)) > fiveMins || examinersCache.length === 0) {
+        loadExaminersCache();
+      }
     }
   }, []);
+
+  // Sync Timer Logic
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isCacheLoading) {
+      setSyncTimer(0);
+      interval = setInterval(() => {
+        setSyncTimer(prev => prev + 1);
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isCacheLoading]);
 
   // Apply dark mode class to root and save to localStorage
   useEffect(() => {
@@ -124,6 +156,38 @@ export default function App() {
     const res = await api.getMillList();
     if (res.success && res.data) {
       setMillList(res.data);
+    }
+  };
+
+  const loadExaminersCache = async () => {
+    setIsCacheLoading(true);
+    try {
+      const res = await api.getAllExaminers();
+      if (res.success && Array.isArray(res.data)) {
+        // Map 2D array to objects in frontend - much faster than GAS objects
+        const mappedData = res.data.map((row: any[]) => ({
+          examinerName: row[1] || '',
+          tPin: row[3] || '',
+          institute: row[4] || '',
+          department: row[5] || '',
+          phone: row[9] || ''
+        }));
+        
+        setExaminersCache(mappedData);
+        localStorage.setItem('sheetSync_lastCacheSync', Date.now().toString());
+        
+        // Handle localStorage quota gracefully
+        try {
+          localStorage.setItem('sheetSync_examinersCache', JSON.stringify(mappedData));
+        } catch (storageError) {
+          console.warn('Storage quota exceeded. Cache will be in-memory only for this session.');
+          localStorage.removeItem('sheetSync_examinersCache');
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load cache:', e);
+    } finally {
+      setIsCacheLoading(false);
     }
   };
 
@@ -292,13 +356,31 @@ export default function App() {
         {/* Header for Desktop and Mobile */}
         <header className={`md:hidden sticky top-0 z-20 flex justify-between items-center p-4 ${isMobileMenuOpen ? 'hidden' : 'flex'} ${isDarkMode ? 'bg-[#0d121c] border-b border-[#1a2333]' : 'bg-white border-b border-[#e1e8ed]'}`}>
           <div className="flex items-center gap-2 font-bold text-[#107c10]">
-            <img 
-              src="https://media.licdn.com/dms/image/v2/D4E03AQGmsDKBaZo11w/profile-displayphoto-scale_200_200/B4EZenFWidGwAY-/0/1750854889953?e=2147483647&v=beta&t=7-JOvdyIKHjXOUCvcy5JUZYlWdGqcRtvceYthLn0TU8" 
-              alt="Logo" 
-              className="w-6 h-6 rounded-full border border-current object-cover shadow-sm"
-              referrerPolicy="no-referrer"
-            />
-            <span className="text-[14px] leading-tight">Teachers Lunch Problem</span>
+            <div className="relative">
+              <img 
+                src="https://media.licdn.com/dms/image/v2/D4E03AQGmsDKBaZo11w/profile-displayphoto-scale_200_200/B4EZenFWidGwAY-/0/1750854889953?e=2147483647&v=beta&t=7-JOvdyIKHjXOUCvcy5JUZYlWdGqcRtvceYthLn0TU8" 
+                alt="Logo" 
+                className="w-6 h-6 rounded-full border border-current object-cover shadow-sm"
+                referrerPolicy="no-referrer"
+              />
+              {isCacheLoading && (
+                <div className="absolute -top-1 -right-1">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+                  </span>
+                </div>
+              )}
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[14px] leading-tight">Teachers Lunch Problem</span>
+              {isCacheLoading && (
+                <span className={`text-[9px] font-medium ${isDarkMode ? 'text-[#a0aec0]' : 'text-[#7f8c8d]'} flex items-center gap-1`}>
+                  <Database size={8} className="animate-pulse" />
+                  Syncing {syncTimer}s
+                </span>
+              )}
+            </div>
           </div>
           <div className="flex items-center gap-3">
             <button 
@@ -336,8 +418,8 @@ export default function App() {
               />
             )}
             <div className={`hidden md:flex text-[13px] ${isDarkMode ? 'text-[#a0aec0] bg-[#0d121c] border-[#1a2333]' : 'text-[#7f8c8d] bg-white border-[#e1e8ed]'} p-[8px_16px] rounded-[20px] border items-center gap-2 shadow-sm whitespace-nowrap`}>
-              <span className="w-2 h-2 rounded-full bg-[#107c10]"></span>
-              Active Connection
+              <span className={`w-2 h-2 rounded-full ${isCacheLoading ? 'bg-orange-400 animate-pulse' : 'bg-[#107c10]'}`}></span>
+              {isCacheLoading ? `Syncing DB... (${syncTimer}s)` : examinersCache.length > 0 ? `Database: ${examinersCache.length} Records` : 'Active Connection'}
             </div>
           </div>
         </header>
@@ -362,6 +444,7 @@ export default function App() {
               user={user}
               onRefresh={loadMillList}
               isDarkMode={isDarkMode}
+              examinersCache={examinersCache}
             />
           )}
 

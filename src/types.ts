@@ -24,6 +24,7 @@ export interface MillEntry {
   nickName: string;
   institute: string;
   department: string;
+  phone: string;
   comment: string;
   creatorDate?: string;
   creatorName?: string;

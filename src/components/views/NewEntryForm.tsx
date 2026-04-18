@@ -16,6 +16,7 @@ export default function NewEntryForm({ comments, user, onSuccess, isDarkMode }: 
     date: new Date().toISOString().split('T')[0],
     tPin: '',
     nickName: '',
+    phone: '',
     institute: '',
     department: '',
     comment: ''
@@ -38,6 +39,7 @@ export default function NewEntryForm({ comments, user, onSuccess, isDarkMode }: 
           date: new Date().toISOString().split('T')[0], 
           tPin: '', 
           nickName: '', 
+          phone: '',
           institute: '', 
           department: '', 
           comment: '' 
